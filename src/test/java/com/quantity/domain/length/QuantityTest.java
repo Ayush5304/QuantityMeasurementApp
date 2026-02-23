@@ -1,4 +1,3 @@
-
 package com.quantity.domain.length;
 
 import org.junit.jupiter.api.Test;
