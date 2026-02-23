@@ -287,6 +287,6 @@ feature/* → dev → main
 
 # 👨‍💻 Author
 
-Ayush Mishra 
-B.Tech Computer Science & Engineering  
+Ayush Mishra| 
+B.Tech Computer Science & Engineering | 
 Java | Maven | OOP | Clean Architecture
