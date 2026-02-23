@@ -1,42 +1,40 @@
 package com.quantity.app;
 
 import com.quantity.domain.Quantity;
-import com.quantity.domain.length.LengthUnit;
-import com.quantity.domain.weight.WeightUnit;
+import com.quantity.unit.LengthUnit;
+import com.quantity.unit.WeightUnit;
+import com.quantity.unit.VolumeUnit;
 
 public class QuantityMeasurementApp {
 
-    public static <U extends com.quantity.domain.IMeasurable>
-    void demonstrateEquality(Quantity<U> q1, Quantity<U> q2) {
-        System.out.println(q1.equals(q2));
-    }
-
-    public static <U extends com.quantity.domain.IMeasurable>
-    void demonstrateConversion(Quantity<U> q, U targetUnit) {
-        System.out.println(q.convertTo(targetUnit));
-    }
-
-    public static <U extends com.quantity.domain.IMeasurable>
-    void demonstrateAddition(Quantity<U> q1, Quantity<U> q2, U targetUnit) {
-        System.out.println(q1.add(q2, targetUnit));
-    }
-
     public static void main(String[] args) {
 
-        // Length
-        Quantity<LengthUnit> l1 = new Quantity<>(1.0, LengthUnit.FEET);
-        Quantity<LengthUnit> l2 = new Quantity<>(12.0, LengthUnit.INCHES);
+        Quantity<LengthUnit> l1 = new Quantity<>(10.0, LengthUnit.FEET);
+        Quantity<LengthUnit> l2 = new Quantity<>(6.0, LengthUnit.INCHES);
 
-        demonstrateEquality(l1, l2);
-        demonstrateConversion(l1, LengthUnit.INCHES);
-        demonstrateAddition(l1, l2, LengthUnit.FEET);
+        System.out.println("Subtraction (Length):");
+        System.out.println(l1.subtract(l2));
+        System.out.println(l1.subtract(l2, LengthUnit.INCHES));
 
-        // Weight
-        Quantity<WeightUnit> w1 = new Quantity<>(1.0, WeightUnit.KILOGRAM);
-        Quantity<WeightUnit> w2 = new Quantity<>(1000.0, WeightUnit.GRAM);
+        System.out.println("\nDivision (Length):");
+        System.out.println(l1.divide(new Quantity<>(2.0, LengthUnit.FEET)));
 
-        demonstrateEquality(w1, w2);
-        demonstrateConversion(w1, WeightUnit.GRAM);
-        demonstrateAddition(w1, w2, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> w1 = new Quantity<>(10.0, WeightUnit.KILOGRAM);
+        Quantity<WeightUnit> w2 = new Quantity<>(5000.0, WeightUnit.GRAM);
+
+        System.out.println("\nSubtraction (Weight):");
+        System.out.println(w1.subtract(w2));
+
+        System.out.println("\nDivision (Weight):");
+        System.out.println(w1.divide(new Quantity<>(5.0, WeightUnit.KILOGRAM)));
+
+        Quantity<VolumeUnit> v1 = new Quantity<>(5.0, VolumeUnit.LITRE);
+        Quantity<VolumeUnit> v2 = new Quantity<>(500.0, VolumeUnit.MILLILITRE);
+
+        System.out.println("\nSubtraction (Volume):");
+        System.out.println(v1.subtract(v2));
+
+        System.out.println("\nDivision (Volume):");
+        System.out.println(v1.divide(new Quantity<>(10.0, VolumeUnit.LITRE)));
     }
 }
