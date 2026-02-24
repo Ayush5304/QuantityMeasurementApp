@@ -10,23 +10,28 @@ DRY principle, abstraction, polymorphism, and clean architecture.
 
 ### 📌 Project Overview
 
-This application compares length measurements such as:
+A generic, extensible, and SOLID-compliant Java application for performing measurement operations across multiple categories:
 
-- Feet
-- Inches
+- Length
+- Weight
+- Volume
+- Temperature (with selective arithmetic support)
 
-The equality comparison follows proper object-oriented design and respects:
+The system evolves incrementally from **UC1 to UC14**, demonstrating clean architecture, generics, functional interfaces, lambda expressions, and interface refactoring principles.
 
-- Equality Contract (equals method rules)
-- DRY Principle
-- Encapsulation
-- Abstraction
-- Open-Closed Principle
-- Refactoring Best Practices
+Design a scalable and type-safe measurement system that:
+
+- Supports unit conversion
+- Maintains cross-category isolation
+- Centralizes arithmetic logic
+- Enforces operation validity constraints
+- Demonstrates real-world object-oriented design
 
 ---
 
-### 🏗 Project Structure (Maven)
+### Project Structure🏗 
+
+#### 🏗 Project Structure (Maven)
 
 ```
 quantity-measurement-app/
@@ -53,240 +58,252 @@ quantity-measurement-app/
 
 ---
 
-### 🌿 Branch Structure
+## 🌿 Branch Structure
 
 The project follows incremental development across branches:
 
----
+### 🚀 Features Overview (UC1 – UC14)
 
-### 🔹 UC1 – Feet Equality
+#### 🔹 UC1 – Equality for Same Unit
+- Compare same-unit quantities.
 
-#### Objective:
-Compare two feet measurements for equality.
+#### 🔹 UC2 – Null Handling
+- Null unit validation.
+- equals(null) handling.
 
-#### Branch Name:
-```
-feature/UC1-FeetEquality
-```
+#### 🔹 UC3 – Different Value Inequality
+- Detect unequal quantities.
 
-#### Folder Structure:
+#### 🔹 UC4 – Cross Unit Comparison (Length)
+- Feet ↔ Inch comparison.
+- Base unit conversion introduced.
 
-```
-domain/length/
-   └── Feet.java
+#### 🔹 UC5 – Additional Length Units
+- Yard, Centimeter support.
+- Scalable enum design.
 
-test/domain/length/
-   └── FeetTest.java
-```
+#### 🔹 UC6 – Weight Measurement
+- Gram, Kilogram support.
+- Cross-category restriction.
 
-#### Implementation:
+#### 🔹 UC7 – Volume Measurement
+- Liter, Milliliter, Gallon.
+- Generic isolation via `<U extends IMeasurable>`.
 
-- Class: `Feet`
-- Constructor: `Feet(double value)`
-- Overridden `equals()` method
-- Compares only feet-to-feet
-- No cross-unit comparison
+#### 🔹 UC8 – Addition Operation
+- Add compatible quantities.
+- Base-unit arithmetic logic.
 
-#### Concepts Covered:
+#### 🔹 UC9 – Subtraction Operation
+- Subtract quantities.
+- Precision rounding.
 
-- equals() override
-- Equality contract basics
-- Value-based equality
-- Unit testing with JUnit
+#### 🔹 UC10 – Division Operation
+- Division with zero validation.
 
----
+#### 🔹 UC11 – Volume Arithmetic Support
+- Extended arithmetic support for volume.
 
-### 🔹 UC2 – Feet and Inches Comparison
+#### 🔹 UC12 – Centralized Arithmetic Enum
+- Introduced `ArithmeticOperation`.
+- Used `DoubleBinaryOperator`.
+- Removed duplication.
 
-#### Objective:
-Compare Feet and Inches across units.
+#### 🔹 UC13 – Arithmetic Refactoring
+- Unified `performArithmetic()` method.
+- Clean reusable design.
 
-#### Branch Name:
-```
-feature/UC2-FeetInchesComparison
-```
+#### 🔹 UC14 – Temperature Measurement (Selective Arithmetic)
 
-#### Folder Structure:
+#### ✔ Added Units
+- CELSIUS
+- FAHRENHEIT
+- KELVIN
 
-```
-domain/length/
-   ├── Feet.java
-   └── Inches.java
+#### ✔ Supported
+- Equality
+- Conversion
 
-test/domain/length/
-   ├── FeetTest.java
-   └── InchesTest.java
-```
+#### ❌ Unsupported
+- Addition
+- Subtraction
+- Division
 
-#### Implementation:
+Temperature arithmetic is disabled because:
+100°C + 50°C ≠ meaningful result
+100°C ÷ 50°C = meaningless ratio
 
-- Two separate classes: `Feet` and `Inches`
-- Conversion logic added manually
-- 1 Foot = 12 Inches
-- Cross-unit comparison supported
+#### Uses:
+`validateOperationSupport()`
 
-#### Limitation:
-
-Code duplication:
-- Same constructor structure
-- Same equals() logic
-- Violates DRY principle
-
-#### Concepts Covered:
-
-- Cross-unit equality
-- Conversion logic
-- Refactoring awareness
-- Code duplication problem
+#### Throws:
+`UnsupportedOperationException`
 
 ---
 
-### 🔹 UC3 – Generic Quantity Class (DRY Principle)
+### 🌡 Temperature Conversion Formulas
 
-## Objective:
-Eliminate duplication by introducing a generic Quantity class.
+#### Celsius → Fahrenheit
+`°F = (°C × 9/5) + 32`
 
-#### Branch Name:
-```
-feature/UC3-GenericQuantityClassForDRYPrinciple
-```
+### Fahrenheit → Celsius
+`°C = (°F − 32) × 5/9`
 
-#### Folder Structure:
+### Kelvin → Celsius
+`°C = K − 273.15`
 
-```
-domain/length/
-   ├── LengthUnit.java
-   └── Quantity.java
+---
 
-test/domain/length/
-   └── QuantityTest.java
-```
+## 🌿 Branch Strategy
 
-#### Implementation:
+### `main`
+- Stable production-ready branch
+- Contains UC1 – UC14
 
-#### LengthUnit Enum
+### `dev`
+- Integration branch
+- All feature branches merged before main
 
-- FEET
-- INCH
-- Conversion factor stored inside enum
-- Centralized conversion logic
+### Feature Branches🌿
 
-#### Quantity Class
+| Branch | Description |
+|--------|------------|
+| feature/UC1 | Basic equality |
+| feature/UC2 | Null validation |
+| feature/UC3 | Inequality logic |
+| feature/UC4 | Length conversion |
+| feature/UC5 | Additional length units |
+| feature/UC6 | Weight measurement |
+| feature/UC7 | Volume measurement |
+| feature/UC8 | Addition support |
+| feature/UC9 | Subtraction support |
+| feature/UC10 | Division support |
+| feature/UC11 | Volume arithmetic |
+| feature/UC12 | Arithmetic enum refactor |
+| feature/UC13 | Centralized arithmetic logic |
+| feature/UC14 | Temperature with selective arithmetic |
 
-- Attributes:
-  - double value
-  - LengthUnit unit
-- Converts values to base unit (feet)
-- Clean equals() implementation
-- Proper hashCode() override
+---
 
-## Advantages:
+### 🧠 Core Concepts Implemented
 
-✔ DRY Principle applied  
-✔ Single Responsibility Principle  
-✔ Type-safe enum usage  
-✔ Scalable (easy to add new units)  
-✔ No duplication  
-✔ Backward compatible  
+- Generics
+- Functional Interfaces
+- Lambda Expressions
+- Enum Polymorphism
+- Default Interface Methods
+- Interface Segregation Principle (ISP)
+- SOLID Principles
+- Capability-Based Design
+- Non-linear Conversions
+- Epsilon-based Floating Point Comparison
 
-### Concepts Covered:
+---
 
-- DRY Principle
-- Polymorphism
-- Enum encapsulation
-- Abstraction
-- Encapsulation
-- Open-Closed Principle
-- Refactoring strategy
-- Equality contract compliance
-- Null safety
-- Type safety
+### 📌 Example Output
+
+Equality: `true`         
+Convert 100C to F: Quantity{212.0 FAHRENHEIT}          
+Temperature does not support ADD operation.
 
 ---
 
 ### 🧪 Testing Strategy
 
-All branches include JUnit test cases covering:
+JUnit 5 coverage includes:
 
 - Same-unit equality
 - Cross-unit equality
-- Different values
-- Null comparison
-- Same reference comparison
-- Invalid unit handling
+- Conversion accuracy
+- Round-trip conversion
+- Symmetric & reflexive properties
+- Unsupported operation validation
+- Cross-category prevention
+- Division-by-zero handling
+- Null validation
+- Precision tolerance (epsilon)
+
+---
+
+### 🔐 Type Safety
+
+Compile-time:
+`Quantity<TemperatureUnit> ≠ Quantity<LengthUnit>`
+
+
+Runtime:
+`equals()` checks `unit.getClass()`
+
+Cross-category comparisons return false.
+
+---
+
+### 📏 Floating-Point Precision
+
+- private static final double EPSILON = 0.01;
+
+Prevents precision-related equality errors.
+
+---
+
+### 🏛 Design Principles
+
+#### ▶️ Single Responsibility
+Each enum handles only conversion logic.
+
+#### ▶️ Open/Closed Principle
+New categories can be added without modifying core logic.
+
+#### ▶️ Interface Segregation
+Optional arithmetic via default methods.
+
+#### ▶️ Liskov Substitution
+All measurable units behave consistently for conversion.
+
+#### ▶️ Dependency Inversion
+`Quantity` depends on `IMeasurable`, not concrete enums.
+
+---
+
+### 🔮 Future Enhancements
+
+- Compile-time arithmetic restriction
+- Temperature difference modeling
+- REST API integration
+- Spring Boot wrapper
+- Persistence layer
+- Additional measurement categories
 
 ---
 
 ### ⚙ How to Run
 
-## 1️⃣ Clone Repository
+#### 1️⃣ Clone Repository
 
 ```
 git clone <repository-url>
 ```
 
-## 2️⃣ Switch Branch
+#### 2️⃣ Switch Branch
 
 ```
 git checkout feature/UC3-GenericQuantityClassForDRYPrinciple
 ```
 
-## 3️⃣ Run Tests
+#### 3️⃣ Run Tests
 
 ```
 mvn clean test
 ```
 
-## 4️⃣ Run Application
+#### 4️⃣ Run Application
 
 Run `QuantityMeasurementApp.java` from IDE.
 
 ---
 
-# 🔁 Git Workflow
+### Author👨‍💻
 
-Feature Branches:
-```
-feature/UC1
-feature/UC2
-feature/UC3
-```
-
-Integration Flow:
-```
-feature/* → dev → main
-```
-
-- `dev` = integration branch
-- `main` = production-ready branch
-
----
-
-# 📚 Key Learning Outcomes
-
-- Understanding value-based equality
-- Avoiding code duplication
-- Refactoring legacy design
-- Clean object-oriented modeling
-- Writing scalable domain models
-- Following equality contract strictly
-- Designing extensible architecture
-
----
-
-# 🚀 Future Enhancements
-
-- Add Meter, Yard, Centimeter
-- Introduce Weight measurement
-- Use BigDecimal for precision
-- Convert to Spring Boot REST API
-- Apply Strategy Pattern for conversion
-- Implement Generic Quantity<T>
-
----
-
-# 👨‍💻 Author
-
-Ayush Mishra| 
-B.Tech Computer Science & Engineering | 
+[Ayush Mishra](https://github.com/Ayush5304) - Software Developer👨‍💻 |            
+B.Tech - `[Computer Science & Engineering]`         
 Java | Maven | OOP | Clean Architecture
