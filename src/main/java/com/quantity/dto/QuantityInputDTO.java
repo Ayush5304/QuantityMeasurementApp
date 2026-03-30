@@ -2,30 +2,31 @@ package com.quantity.dto;
 
 public class QuantityInputDTO {
 
-    private QuantityDTO thisQuantityDTO;
-    private QuantityDTO thatQuantityDTO;
+    private QuantityDTO quantity1;
+    private QuantityDTO quantity2;
 
     public QuantityInputDTO() {
     }
 
-    public QuantityInputDTO(QuantityDTO thisQuantityDTO, QuantityDTO thatQuantityDTO) {
-        this.thisQuantityDTO = thisQuantityDTO;
-        this.thatQuantityDTO = thatQuantityDTO;
-    }
+	public QuantityDTO getQuantity1() {
+		return quantity1;
+	}
 
-    public QuantityDTO getThisQuantityDTO() {
-        return thisQuantityDTO;
-    }
+	public void setQuantity1(QuantityDTO quantity1) {
+		this.quantity1 = quantity1;
+	}
 
-    public void setThisQuantityDTO(QuantityDTO thisQuantityDTO) {
-        this.thisQuantityDTO = thisQuantityDTO;
-    }
+	public QuantityDTO getQuantity2() {
+		return quantity2;
+	}
 
-    public QuantityDTO getThatQuantityDTO() {
-        return thatQuantityDTO;
-    }
+	public void setQuantity2(QuantityDTO quantity2) {
+		this.quantity2 = quantity2;
+	}
 
-    public void setThatQuantityDTO(QuantityDTO thatQuantityDTO) {
-        this.thatQuantityDTO = thatQuantityDTO;
-    }
+	public QuantityInputDTO(QuantityDTO quantity1, QuantityDTO quantity2) {
+		super();
+		this.quantity1 = quantity1;
+		this.quantity2 = quantity2;
+	}
 }
