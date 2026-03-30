@@ -1,32 +1,25 @@
 package com.quantity.dto;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class QuantityInputDTO {
 
+    @NotNull(message = "thisQuantityDTO cannot be null")
+    @Valid
     private QuantityDTO quantity1;
+
+    @NotNull(message = "thatQuantityDTO cannot be null")
+    @Valid
     private QuantityDTO quantity2;
 
-    public QuantityInputDTO() {
-    }
+    // Optional target unit for convert / add / subtract operations
+    private String targetUnit;
 
-	public QuantityDTO getQuantity1() {
-		return quantity1;
-	}
-
-	public void setQuantity1(QuantityDTO quantity1) {
-		this.quantity1 = quantity1;
-	}
-
-	public QuantityDTO getQuantity2() {
-		return quantity2;
-	}
-
-	public void setQuantity2(QuantityDTO quantity2) {
-		this.quantity2 = quantity2;
-	}
-
-	public QuantityInputDTO(QuantityDTO quantity1, QuantityDTO quantity2) {
-		super();
-		this.quantity1 = quantity1;
-		this.quantity2 = quantity2;
-	}
 }
