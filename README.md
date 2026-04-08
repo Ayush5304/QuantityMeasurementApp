@@ -1,255 +1,109 @@
-<<<<<<< HEAD
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+# 📏 Quantity Measurement Application  
+## 🚀 Branch: feature/UC1-FeetEquality
+
+---
 
 ## 📌 Overview
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
+This branch implements **UC1 – Feet Equality**.
 
-This project is enhanced with **advanced security features** including:
+UC1 is the foundational use case of the Quantity Measurement Application.  
+It verifies that two length measurements in **Feet** are equal when their values are the same.
 
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+This use case establishes:
 
----
-
-## 🎯 Key Features
-
-### 🧮 Core Functionalities
-
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
-
----
-
-### 🔐 Security Features (UC18)
-
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
-
----
-
-### 🗄️ Database & Persistence
-
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
-
----
-
-### 📊 API & Monitoring
-
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
-
----
-
-## 🏗️ Project Structure
-
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
-
----
-
-## ⚙️ Tech Stack
-
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
-
----
-
-## 🔑 Authentication Flow
-
-### 🔐 1. JWT Login
-
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
-
----
-
-### 🌐 2. GitHub OAuth Login
-
-```
-GET /oauth2/authorization/github
-```
-
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
-
----
-
-### 🔒 3. Access Protected APIs
-
-Add header:
-
-```
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-## 📌 API Endpoints
-
-### 🔹 Quantity Operations
-
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
-
----
-
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
-
----
-
-### 🔹 Auth APIs
-
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
-
----
-
-## ⚙️ Configuration
-
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
-
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
-
----
-
-
-=======
-# QuantityMeasurementApp
-
-# UC1 – Feet Measurement Equality
-
-##  Description
-
-Implements equality comparison between two numerical values measured in feet using proper `equals()` method implementation.
-
----
-
-##  Objective
-
-Return:
-
-- `true` if both feet values are equal  
-- `false` otherwise  
-
----
-
-##  Implementation
-
-- Inner class `Feet`  
-- Encapsulated `private final double value`  
-- Immutable design  
-- Overridden `equals()` using `Double.compare()`  
-- Null and type safety checks  
-
----
-
-##  Example
-
-**Input:**  
-1.0 ft and 1.0 ft  
-
-**Output:**  
-Equal: `true`
-
----
-
-##  Concepts Covered
-
-- Equality Contract  
-- Floating-point comparison  
+- Basic object modeling  
+- Equality comparison logic  
+- Unit encapsulation  
 - Null safety  
-- Type safety  
-- Encapsulation  
-- Unit testing basics  
->>>>>>> 5e0c17eee4639f0f17bff244e4fd7ec7969b1dea
+- Clean OOP structure  
+
+---
+
+## 🎯 Objective
+
+Validate that:
+1 ft == 1 ft → true
+1 ft != 2 ft → false
+
+
+This is the first step toward building a scalable and extensible measurement system.
+
+---
+
+## 🏗 Project Structure (UC1)
+```
+quantity-measurement-app
+│
+└── src
+├── main
+│ └── java
+│ └── com.quantity
+│ ├── model
+│ │ └── Quantity.java
+│ │
+│ └── unit
+│ └── LengthUnit.java
+│
+└── test
+└── java
+└── com.quantity
+└── QuantityTest.java
+```
+
+
+---
+
+## 🧠 Concepts Implemented
+
+- Object-Oriented Programming (OOP)
+- `equals()` method overriding
+- Proper `hashCode()` implementation
+- Null validation
+- Enum usage
+- Encapsulation
+- Immutable object design
+
+---
+
+## 📦 Implementation Details
+
+### 1️⃣ LengthUnit Enum
+
+Currently supports:
+
+No conversion logic is implemented in UC1.  
+Only a single unit comparison is supported.
+
+---
+
+### 2️⃣ Quantity Class
+
+#### Attributes
+
+#### Responsibilities
+
+- Store measurement value
+- Store measurement unit
+- Override `equals()` for logical comparison
+- Maintain immutability
+
+#### Equality Rule
+
+Two quantities are equal if:
+
+- Units are the same
+- Values are numerically equal
+
+---
+
+## 💻 Example Implementation
+
+```java
+Quantity q1 = new Quantity(1.0, LengthUnit.FEET);
+Quantity q2 = new Quantity(1.0, LengthUnit.FEET);
+Quantity q3 = new Quantity(2.0, LengthUnit.FEET);
+
+System.out.println(q1.equals(q2));  // true
+System.out.println(q1.equals(q3));  // false
+System.out.println(q1.equals(null)); // false
