@@ -1,205 +1,110 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+## UC10 – Generic Quantity Class with Unit Interface
 
-## 📌 Overview
+### Description
+Refactors UC1–UC9 into a single generic design using:
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
+- `IMeasurable` interface
+- Generic `Quantity<U extends IMeasurable>` class
+- Unit enums implementing the interface (LengthUnit, WeightUnit)
 
-This project is enhanced with **advanced security features** including:
+Eliminates duplication between QuantityLength and QuantityWeight.
+Establishes scalable multi-category measurement architecture.
 
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+## Architecture
 
----
+### IMeasurable (Interface)
+Defines unit contract:
+- getConversionFactor()
+- convertToBaseUnit(double)
+- convertFromBaseUnit(double)
+- getUnitName()
 
-## 🎯 Key Features
+### Unit Enums
+- LengthUnit implements IMeasurable
+- WeightUnit implements IMeasurable
+- Encapsulate conversion logic
+- Immutable and thread-safe
 
-### 🧮 Core Functionalities
+### Generic Quantity<U extends IMeasurable>
+- private final double value
+- private final U unit
+- equals() using base-unit normalization
+- convertTo(U targetUnit)
+- add(Quantity<U>)
+- add(Quantity<U>, U targetUnit)
+- Immutable value object
+- hashCode() consistent with equals()
 
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+### Example Usage
 
----
+Length:
 
-### 🔐 Security Features (UC18)
+new Quantity<>(1.0, LengthUnit.FEET)
+    .equals(new Quantity<>(12.0, LengthUnit.INCHES))
+→ true
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
+Weight:
 
----
+new Quantity<>(1.0, WeightUnit.KILOGRAM)
+    .convertTo(WeightUnit.GRAM)
+→ Quantity(1000.0, GRAM)
 
-### 🗄️ Database & Persistence
+Addition:
 
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
+new Quantity<>(1.0, LengthUnit.FEET)
+    .add(new Quantity<>(12.0, LengthUnit.INCHES), LengthUnit.FEET)
+→ Quantity(2.0, FEET)
 
----
+### Cross-Category Safety
 
-### 📊 API & Monitoring
+new Quantity<>(1.0, LengthUnit.FEET)
+    .equals(new Quantity<>(1.0, WeightUnit.KILOGRAM))
+→ false
 
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
+Compiler prevents:
+Quantity<LengthUnit> ≠ Quantity<WeightUnit>
 
----
+### Improvements Over UC9
 
-## 🏗️ Project Structure
+- Removes duplicate Quantity classes
+- Removes duplicate unit enum logic
+- DRY principle enforced
+- SRP restored
+- Single source of truth for equality & arithmetic
+- Code growth becomes linear (not exponential)
+- Simplified QuantityMeasurementApp
 
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
+### Concepts Covered
 
----
+- Generic Programming (<U extends IMeasurable>)
+- Interface-Based Design
+- DRY Principle
+- Single Responsibility Principle
+- Open-Closed Principle
+- Polymorphism & Delegation
+- Type Safety with Generics
+- Runtime Category Validation
+- Immutability
+- Composition Over Inheritance
+- Scalable Multi-Category Architecture
 
-## ⚙️ Tech Stack
+### Scalability Pattern
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+To add new category:
 
----
+1. Create enum implementing IMeasurable (e.g., VolumeUnit)
+2. Use existing Quantity<VolumeUnit>
+3. No modification to Quantity class required
 
-## 🔑 Authentication Flow
+### Benefits
 
-### 🔐 1. JWT Login
-
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
-
----
-
-### 🌐 2. GitHub OAuth Login
-
-```
-GET /oauth2/authorization/github
-```
-
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
-
----
-
-### 🔒 3. Access Protected APIs
-
-Add header:
-
-```
-Authorization: Bearer <JWT_TOKEN>
-```
+- One Quantity class for all categories
+- Unified comparison, conversion, addition logic
+- Minimal code duplication
+- Enterprise-ready extensible design
+- Backward compatible (UC1–UC9 preserved)
+- Cleaner, maintainable architecture
 
 ---
 
-## 📌 API Endpoints
-
-### 🔹 Quantity Operations
-
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
-
----
-
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
-
----
-
-### 🔹 Auth APIs
-
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
-
----
-
-## ⚙️ Configuration
-
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
-
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
-
----
-
-
+**Code Link:** [UC-10 feature](https://github.com/Ayush5304/QuantityMeasurementApp/tree/feature/UC10-MultiCategoryUnit)
