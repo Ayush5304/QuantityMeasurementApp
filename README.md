@@ -1,205 +1,132 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+## UC14: Temperature Measurement with Selective Arithmetic Support
 
-## 📌 Overview
+### Description
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
+UC14 extends the Quantity Measurement Application to support **temperature measurements** alongside existing categories such as **length, weight, and volume**.
 
-This project is enhanced with **advanced security features** including:
+Unlike length, weight, and volume (which support arithmetic operations like addition, subtraction, and division), **temperature is fundamentally different**:
 
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+- Temperature values support:
+  - Equality comparison  
+  - Unit conversion (Celsius ↔ Fahrenheit ↔ Kelvin)
 
----
+- Temperature values do **NOT** support:
+  - Addition  
+  - Subtraction  
+  - Division  
 
-## 🎯 Key Features
-
-### 🧮 Core Functionalities
-
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+Operations such as `100°C + 50°C` or `100°C ÷ 50°C` are physically meaningless in the context of absolute temperature values. UC14 enforces these constraints while keeping the existing architecture backward compatible.
 
 ---
 
-### 🔐 Security Features (UC18)
+### Objectives
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
-
----
-
-### 🗄️ Database & Persistence
-
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
-
----
-
-### 📊 API & Monitoring
-
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
+- Add a new measurement category: **Temperature**
+- Support temperature units:
+  - Celsius (CELSIUS) – base unit  
+  - Fahrenheit (FAHRENHEIT)  
+  - Kelvin (KELVIN)  
+- Enable:
+  - Equality comparison between temperature quantities  
+  - Conversion between temperature units  
+- Restrict:
+  - Arithmetic operations (add, subtract, divide) for temperature quantities  
+- Ensure:
+  - No breaking changes to UC1–UC13  
+  - Cross-category operations remain disallowed  
+  - Existing length, weight, and volume behavior remains unchanged  
 
 ---
 
-## 🏗️ Project Structure
+### Preconditions
 
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
+- UC1–UC13 are fully implemented and tested.
+- `Quantity<U extends IMeasurable>` supports:
+  - Equality comparison  
+  - Conversion  
+  - Arithmetic operations for non-temperature categories  
+- `IMeasurable` interface remains unchanged.
+- LengthUnit, WeightUnit, and VolumeUnit continue to work without modification.
 
 ---
 
-## ⚙️ Tech Stack
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+A new `TemperatureUnit` enum is introduced with the following constants:
 
----
+- `CELSIUS` (base unit)  
+- `FAHRENHEIT`  
+- `KELVIN`  
 
-## 🔑 Authentication Flow
+Temperature conversions are implemented using **formulas** (non-linear conversion):
 
-### 🔐 1. JWT Login
+- Celsius → Fahrenheit
+- Fahrenheit → Celsius
+- Kelvin → Celsius
 
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
 
 ---
 
-### 🌐 2. GitHub OAuth Login
+### 2. Equality Comparison
 
-```
-GET /oauth2/authorization/github
-```
+Temperature quantities can be compared across units by converting both values to the base unit (Celsius) and comparing with epsilon tolerance.
 
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
+Examples:
 
----
-
-### 🔒 3. Access Protected APIs
-
-Add header:
-
-```
-Authorization: Bearer <JWT_TOKEN>
-```
+- `0°C == 32°F`  
+- `100°C == 212°F`  
+- `0°C == 273.15K`  
+- `-40°C == -40°F`  
 
 ---
 
-## 📌 API Endpoints
+### 3. Unit Conversion
 
-### 🔹 Quantity Operations
+Temperature quantities can be converted between all supported units.
 
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
+Examples:
 
----
-
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
+- `100°C → 212°F`  
+- `32°F → 0°C`  
+- `0°C → 273.15K`  
+- `-40°C → -40°F`  
 
 ---
 
-### 🔹 Auth APIs
+### 4. Unsupported Arithmetic Operations
 
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
+Arithmetic operations on temperature quantities are explicitly **disallowed**:
+
+- `add()` → throws `UnsupportedOperationException`  
+- `subtract()` → throws `UnsupportedOperationException`  
+- `divide()` → throws `UnsupportedOperationException`  
+
+This prevents logically invalid operations on absolute temperature values.
 
 ---
 
-## ⚙️ Configuration
+### 5. Cross-Category Safety
 
-### 🔐 JWT Properties
+Temperature quantities cannot be compared or combined with other categories:
 
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
+- Temperature vs Length → not equal  
+- Temperature vs Weight → not equal  
+- Temperature vs Volume → not equal  
+
+Generic type safety and runtime checks ensure category isolation.
+
+---
+
+### Example Usage
+
+### Equality
+
+```java
+new Quantity<>(0.0, TemperatureUnit.CELSIUS)
+  .equals(new Quantity<>(32.0, TemperatureUnit.FAHRENHEIT)); // true
+
+new Quantity<>(-40.0, TemperatureUnit.CELSIUS)
+  .equals(new Quantity<>(-40.0, TemperatureUnit.FAHRENHEIT)); // true
 ```
 
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
-
----
-
-
+**Code Link:** [UC-14 feature](https://github.com/Ayush5304/QuantityMeasurementApp/tree/feature/UC14-TemperatureMeasurement)
+  
