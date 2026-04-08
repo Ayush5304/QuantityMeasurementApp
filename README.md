@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
 
 ## 📌 Overview
@@ -203,3 +204,52 @@ http://localhost:8080/swagger-ui/index.html
 ---
 
 
+=======
+# QuantityMeasurementApp
+
+# UC1 – Feet Measurement Equality
+
+##  Description
+
+Implements equality comparison between two numerical values measured in feet using proper `equals()` method implementation.
+
+---
+
+##  Objective
+
+Return:
+
+- `true` if both feet values are equal  
+- `false` otherwise  
+
+---
+
+##  Implementation
+
+- Inner class `Feet`  
+- Encapsulated `private final double value`  
+- Immutable design  
+- Overridden `equals()` using `Double.compare()`  
+- Null and type safety checks  
+
+---
+
+##  Example
+
+**Input:**  
+1.0 ft and 1.0 ft  
+
+**Output:**  
+Equal: `true`
+
+---
+
+##  Concepts Covered
+
+- Equality Contract  
+- Floating-point comparison  
+- Null safety  
+- Type safety  
+- Encapsulation  
+- Unit testing basics  
+>>>>>>> 5e0c17eee4639f0f17bff244e4fd7ec7969b1dea
