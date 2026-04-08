@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;com.quantity.exception.UserNotFound.java&apos; to &apos;UserNotFoundException.java&apos;&#x0D;&#x0A;- Original project: &apos;quantity-measurement-app&apos;&#x0D;&#x0A;- Original element: &apos;com.quantity.exception.UserNotFound.java&apos;&#x0D;&#x0A;- Renamed element: &apos;com.quantity.exception.UserNotFoundException.java&apos;" description="Rename compilation unit &apos;UserNotFound.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.quantity.exception{UserNotFound.java" name="UserNotFoundException.java" references="false" stamp="1774858908524" version="1.0"/>
+</session>
