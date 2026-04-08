@@ -1,205 +1,93 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+## UC11 – Volume Measurement: Equality, Conversion, and Addition  
+(Litre, Millilitre, Gallon)
 
-## 📌 Overview
+### Overview  
+UC11 extends the Quantity Measurement Application to support **volume measurements** along with existing **length** and **weight** categories introduced up to UC10.  
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
+This use case validates that the **generic architecture from UC10** scales seamlessly when a new measurement category is added. No changes are required in the existing `Quantity<U>`, `IMeasurable`, or application logic.  
 
-This project is enhanced with **advanced security features** including:
-
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+A new `VolumeUnit` enum implementing `IMeasurable` is introduced to support volume-specific units and conversions.
 
 ---
 
-## 🎯 Key Features
+### Objectives  
 
-### 🧮 Core Functionalities
-
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+- Add support for volume measurement  
+- Reuse the existing generic `Quantity<U extends IMeasurable>` class  
+- Ensure no changes to existing UC1–UC10 implementation  
+- Validate scalability of the refactored architecture  
 
 ---
 
-### 🔐 Security Features (UC18)
+### Supported Volume Units  
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
+| Unit        | Symbol | Conversion to Base (Litre) |
+|-------------|--------|-----------------------------|
+| Litre       | L      | 1.0 (Base Unit)             |
+| Millilitre  | mL     | 0.001                       |
+| Gallon (US) | gal    | 3.78541                     |
 
----
-
-### 🗄️ Database & Persistence
-
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
+Base unit for volume: **Litre (L)**  
 
 ---
 
-### 📊 API & Monitoring
+### Design  
 
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
+UC11 introduces only one new component:
 
----
 
-## 🏗️ Project Structure
-
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
+All operations such as equality, conversion, and addition are handled by the existing generic `Quantity<U>` class without any modification.
 
 ---
 
-## ⚙️ Tech Stack
+## Functionalities  
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+### Equality Comparison  
+- 1 L = 1000 mL  
+- 1 gal = 3.78541 L  
+- Equality is checked by converting values to the base unit (litre)  
+- Floating-point precision is handled using epsilon tolerance  
 
----
+### Unit Conversion  
+Examples:  
+- 1 L → 1000 mL  
+- 1000 mL → 1 L  
+- 1 gal → 3.78541 L  
+- 1 L → 0.264172 gal  
 
-## 🔑 Authentication Flow
+### Addition  
+Examples:  
+- 1 L + 1000 mL = 2 L  
+- 500 mL + 0.5 L = 1000 mL  
+- 1 gal + 3.78541 L ≈ 2 gal  
 
-### 🔐 1. JWT Login
+Supports:  
+- Implicit target unit (first operand’s unit)  
+- Explicit target unit specification  
 
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
-
----
-
-### 🌐 2. GitHub OAuth Login
-
-```
-GET /oauth2/authorization/github
-```
-
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
+### Cross-Category Safety  
+- Volume cannot be compared or added with length or weight  
+- Generic type constraints prevent mixing categories  
+- Runtime checks ensure category isolation  
 
 ---
 
-### 🔒 3. Access Protected APIs
+### Test Coverage  
 
-Add header:
+UC11 test cases cover:  
 
-```
-Authorization: Bearer <JWT_TOKEN>
-```
-
----
-
-## 📌 API Endpoints
-
-### 🔹 Quantity Operations
-
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
+- Same-unit equality (L, mL, gal)  
+- Cross-unit equality (L ↔ mL, L ↔ gal, mL ↔ gal)  
+- Unit conversion between all unit pairs  
+- Addition with same and different units  
+- Addition with explicit target unit  
+- Zero, negative, large, and small values  
+- Floating-point precision handling  
+- Immutability of `Quantity` objects  
+- Volume vs length/weight incompatibility  
+- Backward compatibility with UC1–UC10 test cases  
 
 ---
 
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
-
----
-
-### 🔹 Auth APIs
-
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
-
----
-
-## ⚙️ Configuration
-
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
-
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
-
----
-
+**Code Link:** [UC-11 feature](https://github.com/Ayush5304/QuantityMeasurementApp/tree/feature/UC11-VolumeMeasurementEquality)
 
