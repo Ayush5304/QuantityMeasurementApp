@@ -1,4 +1,4 @@
-package com.quantity.core;
+package com.quantity.unit;
 
 import java.util.function.Function;
 
@@ -28,8 +28,7 @@ public enum TemperatureUnit implements IMeasurable {
 		throw new UnsupportedOperationException(this.name() + " does not support " + operation + " operation.");
 	}
 
-	// ===== Conversion formulas =====
-
+	// Conversion formulas
 	private static final Function<Double, Double> F_TO_C = f -> (f - 32) * 5 / 9;
 
 	private static final Function<Double, Double> C_TO_F = c -> (c * 9 / 5) + 32;
@@ -38,8 +37,7 @@ public enum TemperatureUnit implements IMeasurable {
 
 	private static final Function<Double, Double> C_TO_K = c -> c + 273.15;
 
-	// ===== IMeasurable methods =====
-
+	// IMeasurable methods
 	@Override
 	public String getUnitName() {
 		return this.name();
@@ -116,4 +114,16 @@ public enum TemperatureUnit implements IMeasurable {
 	            throw new IllegalStateException("Unexpected unit");
 	    }
 	}
+//
+//	@Override
+//	public double toBaseUnit(double value) {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
+//
+//	@Override
+//	public double fromBaseUnit(double baseValue) {
+//		// TODO Auto-generated method stub
+//		return 0;
+//	}
 }

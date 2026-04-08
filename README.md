@@ -1,205 +1,206 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+# Quantity Measurement App♨️📈
 
-## 📌 Overview
+## UC16/Database Integration with JDBC
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
-
-This project is enhanced with **advanced security features** including:
-
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+#### Branch: `feature/UC16-Database-Integration`
 
 ---
 
-## 🎯 Key Features
+## Objective
 
-### 🧮 Core Functionalities
+UC16 enhances the **Quantity Measurement Application** by introducing **database persistence using JDBC**.
+This replaces the in-memory repository with a **database-backed repository** while maintaining the **N-Tier architecture introduced in UC15**.
 
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+The system now supports **persistent storage, historical tracking, and database queries for measurement operations**.
 
 ---
 
-### 🔐 Security Features (UC18)
+## Key Enhancements
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
+### 1. JDBC-Based Repository
 
----
+Implemented:
 
-### 🗄️ Database & Persistence
+`QuantityMeasurementDatabaseRepository`
 
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
+Responsibilities:
 
----
+* Save quantity measurement operations
+* Retrieve stored measurements
+* Query by operation type
+* Query by measurement type
+* Delete stored measurements
+* Get measurement statistics
 
-### 📊 API & Monitoring
-
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
+Uses **PreparedStatement** to prevent SQL injection.
 
 ---
 
-## 🏗️ Project Structure
+### 2. Maven Project Structure
+
+The project now follows **standard Maven layout**:
 
 ```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
+src/main/java
+src/main/resources
+src/test/java
+pom.xml
 ```
+
+Packages organized by layers:
+
+* controller
+* service
+* repository
+* entity
+* exception
+* unit
+* util
 
 ---
 
-## ⚙️ Tech Stack
+### 3. Database Configuration
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+Database used:
 
----
+* **MySQL** for development and testing
 
-## 🔑 Authentication Flow
+Future support prepared for:
 
-### 🔐 1. JWT Login
+* H2 (Memory-Based)
+* PostgreSQL
+
+Configuration stored in:
 
 ```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
-
----
-
-### 🌐 2. GitHub OAuth Login
-
-```
-GET /oauth2/authorization/github
-```
-
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
-
----
-
-### 🔒 3. Access Protected APIs
-
-Add header:
-
-```
-Authorization: Bearer <JWT_TOKEN>
+src/main/resources/application.properties
 ```
 
 ---
 
-## 📌 API Endpoints
+### 4. Connection Pool Implementation
 
-### 🔹 Quantity Operations
+Created utility class:
 
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
+`ConnectionPool`
 
----
+Features:
 
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
+* Reusable database connections
+* Pool statistics monitoring
+* Reduced connection overhead
+* Improved performance
 
 ---
 
-### 🔹 Auth APIs
+### 5. Configuration Utility
 
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
+Created:
 
----
+`ApplicationConfig`
 
-## ⚙️ Configuration
+Responsibilities:
 
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
+* Load database configuration
+* Manage environment-based settings
+* Provide centralized access to application properties
 
 ---
 
-### 🌐 GitHub OAuth Config
+### 6. Custom Database Exception
 
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
+Created:
 
----
+`DatabaseException`
 
-## 📊 Swagger UI
+Purpose:
 
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
+* Wrap JDBC exceptions
+* Provide meaningful error messages
+* Improve error handling across layers
 
 ---
 
-## 🧪 Testing
+### 7. Dependency Injection Support
 
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
+Service layer now supports both repositories:
 
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
+* `QuantityMeasurementCacheRepository`
+* `QuantityMeasurementDatabaseRepository`
 
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
+Repository implementation can be selected using configuration.
 
 ---
 
+## Database Schema
 
+Tables created using `schema.sql`:
+
+* `quantity_measurement_entity`
+* `quantity_measurement_history`
+
+Features:
+
+* Indexed columns
+* Timestamp tracking
+* Operation logging
+
+---
+
+## Maven Dependencies Used
+
+* JDBC Drivers
+* Mysql Database
+* JUnit 4.13.2
+* Mockito
+* SLF4J
+* Logback
+
+Plugins:
+
+* Maven Compiler Plugin
+* Maven Surefire Plugin
+* Maven Shade Plugin
+
+---
+
+## Testing
+
+Test coverage includes:
+
+* Repository CRUD operations
+* Service layer integration
+* Controller workflow
+* Connection pool behavior
+* SQL injection prevention
+* Transaction rollback scenarios
+* Integration testing with H2 database
+
+All **UC1 – UC15 tests remain fully compatible**.
+
+---
+
+## Key Concepts Implemented
+
+* JDBC Database Integration
+* Connection Pooling
+* Parameterized SQL Queries
+* Transaction Management
+* Maven Build System
+* Repository Pattern
+* Dependency Injection
+* Environment-Based Configuration
+* Integration Testing
+
+---
+
+## Learning Outcomes
+
+* Building database-driven Java applications
+* Implementing JDBC repositories
+* Designing scalable persistence layers
+* Using Maven for project management
+* Managing database resources efficiently
+* Writing integration tests with in-memory databases
+
+---

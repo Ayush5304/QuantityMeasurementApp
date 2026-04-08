@@ -1,4 +1,5 @@
-package com.quantity.core;
+
+package com.quantity.unit;
 
 import java.util.Objects;
 import java.util.function.DoubleBinaryOperator;

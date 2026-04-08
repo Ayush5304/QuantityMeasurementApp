@@ -1,4 +1,4 @@
-package com.quantity.core;
+package com.quantity.unit;
 
 /*
  * UC14 Enhancements:
@@ -8,18 +8,14 @@ package com.quantity.core;
 
 public interface IMeasurable {
 
-    // ===== EXISTING REQUIRED METHODS (UNCHANGED) =====
+    // EXISTING REQUIRED METHODS (UNCHANGED)
     String getUnitName();
-
     double getConversionFactor();
-
     double convertToBaseUnit(double value);
-
     double convertFromBaseUnit(double baseValue);
 
 
-    // ===== NEW UC14 ADDITIONS =====
-
+    // NEW UC14 ADDITIONS 
     // default lambda → all units support arithmetic by default
     SupportsArithmetic supportsArithmetic = () -> true;
 
@@ -33,10 +29,6 @@ public interface IMeasurable {
      * Units that do NOT support arithmetic (Temperature) will override this.
      */
     default void validateOperationSupport(String operation) {
-        if(!supportsArithmetic()) {
-            throw new UnsupportedOperationException(
-                operation + " is not supported for unit: " + getUnitName()
-            );
-        }
+        // do nothing by default
     }
 }

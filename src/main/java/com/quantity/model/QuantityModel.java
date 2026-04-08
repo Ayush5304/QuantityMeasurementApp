@@ -1,6 +1,6 @@
 package com.quantity.model;
 
-import com.quantity.core.IMeasurable;
+import com.quantity.unit.IMeasurable;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
