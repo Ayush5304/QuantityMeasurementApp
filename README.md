@@ -1,205 +1,119 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+# QuantityMeasurementApp
 
-## 📌 Overview
+# UC9 – Weight Measurement (Kilogram, Gram, Pound)
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
+##  Description
 
-This project is enhanced with **advanced security features** including:
+Extends the Quantity Measurement Application to support a new measurement category: **Weight**.
 
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
+Supports:
 
----
+- Equality comparison  
+- Unit conversion  
+- Addition (implicit & explicit target unit)  
 
-## 🎯 Key Features
+**Weight units:**
 
-### 🧮 Core Functionalities
+- `KILOGRAM` (base unit)  
+- `GRAM` (1 g = 0.001 kg)  
+- `POUND` (1 lb ≈ 0.453592 kg)  
 
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+Length (UC1–UC8) remains fully functional and independent.
 
 ---
 
-### 🔐 Security Features (UC18)
+##  Architecture
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
+###  WeightUnit (Standalone Enum)
 
----
+- Stores conversion factor relative to `KILOGRAM`  
+- `convertToBaseUnit(double)`  
+- `convertFromBaseUnit(double)`  
+- Immutable and thread-safe  
 
-### 🗄️ Database & Persistence
+###  QuantityWeight
 
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
-
----
-
-### 📊 API & Monitoring
-
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
+- `private final double value`  
+- `private final WeightUnit unit`  
+- `equals()` based on base-unit normalization  
+- `convertTo(targetUnit)`  
+- `add(other)`  
+- `add(other, targetUnit)`  
+- Immutable value object  
 
 ---
 
-## 🏗️ Project Structure
+##  Equality Examples
 
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
+- `Quantity(1.0, KILOGRAM).equals(Quantity(1000.0, GRAM))`  
+  → `true`  
+
+- `Quantity(1.0, KILOGRAM).equals(Quantity(~2.20462, POUND))`  
+  → `true` (within epsilon)  
+
+- `Quantity(1.0, KILOGRAM).equals(Quantity(1.0, FOOT))`  
+  → `false` (category mismatch)  
 
 ---
 
-## ⚙️ Tech Stack
+##  Conversion Examples
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+- `Quantity(1.0, KILOGRAM).convertTo(GRAM)`  
+  → `Quantity(1000.0, GRAM)`  
 
----
+- `Quantity(2.0, POUND).convertTo(KILOGRAM)`  
+  → `Quantity(~0.907184, KILOGRAM)`  
 
-## 🔑 Authentication Flow
-
-### 🔐 1. JWT Login
-
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
+- `Quantity(500.0, GRAM).convertTo(POUND)`  
+  → `Quantity(~1.10231, POUND)`  
 
 ---
 
-### 🌐 2. GitHub OAuth Login
+##  Addition Examples
 
-```
-GET /oauth2/authorization/github
-```
+### Implicit target unit
 
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
+- `Quantity(1.0, KILOGRAM).add(Quantity(1000.0, GRAM))`  
+  → `Quantity(2.0, KILOGRAM)`  
 
----
+### Explicit target unit
 
-### 🔒 3. Access Protected APIs
+- `Quantity(1.0, KILOGRAM).add(Quantity(1000.0, GRAM), GRAM)`  
+  → `Quantity(2000.0, GRAM)`  
 
-Add header:
-
-```
-Authorization: Bearer <JWT_TOKEN>
-```
+- `Quantity(2.0, KILOGRAM).add(Quantity(4.0, POUND), KILOGRAM)`  
+  → `Quantity(~3.82, KILOGRAM)`  
 
 ---
 
-## 📌 API Endpoints
+##  Validation Rules
 
-### 🔹 Quantity Operations
-
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
+- Unit must not be null  
+- Value must be finite (no NaN / Infinity)  
+- Cross-category comparison returns `false`  
+- Immutable objects (no mutation)  
 
 ---
 
-### 🔹 History & Reports
+##  Concepts Covered
 
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
-
----
-
-### 🔹 Auth APIs
-
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
+- Multiple Measurement Categories  
+- Base Unit Normalization (Kilogram)  
+- Enum-Based Conversion Responsibility  
+- Category Type Safety  
+- Equality & HashCode Contract  
+- Arithmetic on Value Objects  
+- Method Overloading  
+- Floating-Point Precision Handling  
+- Architectural Scalability  
+- Immutability & Thread Safety  
 
 ---
 
-## ⚙️ Configuration
+##  Architectural Impact
 
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
-
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
-
----
-
-
+- No modification required in Length module  
+- Weight mirrors Length design (UC8 pattern)  
+- Scalable for Volume, Temperature, etc.  
+- Clean separation between categories  
+- Enterprise-ready extensible design  
