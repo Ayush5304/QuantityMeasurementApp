@@ -1,205 +1,79 @@
-# 🚀 Quantity Measurement App (UC18 - JWT + OAuth2)
+## UC13 – Centralized Arithmetic Logic to Enforce DRY in Quantity Operations
 
-## 📌 Overview
+### Overview  
+UC13 refactors the arithmetic operations (`add`, `subtract`, `divide`) introduced in UC12 to remove
+code duplication and enforce the **DRY (Don’t Repeat Yourself)** principle.  
+The public API and behavior remain unchanged; only the **internal implementation** is improved by
+centralizing validation, base-unit conversion, and arithmetic execution into reusable helper
+methods.
 
-The **Quantity Measurement App** is a Spring Boot-based REST API that supports various measurement operations like **Length, Weight, Volume, and Temperature**.
-
-This project is enhanced with **advanced security features** including:
-
-* 🔐 JWT Authentication
-* 🌐 GitHub OAuth2 Login
-* 🗄️ JPA & Database Integration
-* 📊 Swagger API Documentation
-* ⚡ Robust Exception Handling & Validation
-
----
-
-## 🎯 Key Features
-
-### 🧮 Core Functionalities
-
-* Compare quantities
-* Convert units
-* Arithmetic operations (Add, Subtract, Divide)
-* Measurement history tracking
-* Error tracking & reporting
+This refactoring improves maintainability, consistency, readability, and scalability, and prepares
+the system for adding future arithmetic operations (e.g., multiplication, modulo) without
+duplicating logic.
 
 ---
 
-### 🔐 Security Features (UC18)
+### What Changed in UC13 (High Level)
 
-* JWT-based Authentication (Stateless)
-* GitHub OAuth2 Login
-* Secure REST APIs
-* Custom Authentication Filter
-* Unauthorized access handling (401 response)
-
----
-
-### 🗄️ Database & Persistence
-
-* JPA (Hibernate ORM)
-* H2 (Development)
-* MySQL (Production ready)
-* Indexed queries for performance
+- Introduced a **centralized validation helper** for all arithmetic operations  
+- Introduced a **single core arithmetic helper** that performs base-unit normalization and
+  arithmetic  
+- Introduced an **enum-based arithmetic dispatcher** (`ArithmeticOperation`) to avoid `if/else`
+  or `switch` blocks  
+- Refactored `add`, `subtract`, and `divide` to delegate to these helpers  
+- **No changes to public method signatures or behavior**
 
 ---
 
-### 📊 API & Monitoring
+### What Did NOT Change
 
-* Swagger UI (API Testing)
-* Spring Boot Actuator
-* Logging & Debugging support
-
----
-
-## 🏗️ Project Structure
-
-```
-com.app
-│
-├── config              # Security & Swagger Config
-├── controller          # REST Controllers
-├── service             # Business Logic
-├── repository          # JPA Repositories
-├── model               # Entities & Domain Models
-├── dto                 # Request/Response DTOs
-├── security            # JWT & OAuth2 Components
-├── exception           # Global Exception Handling
-└── core                # Measurement Logic
-```
+- No new features or user-facing functionality  
+- No changes to `IMeasurable`, `LengthUnit`, `WeightUnit`, `VolumeUnit`  
+- No changes to existing test cases (UC12 tests pass unchanged)  
+- No change in arithmetic results or error semantics
 
 ---
 
-## ⚙️ Tech Stack
+### Motivation (Why UC13 Was Needed)
 
-| Layer      | Technology                   |
-| ---------- | ---------------------------- |
-| Backend    | Java, Spring Boot            |
-| Security   | Spring Security, JWT, OAuth2 |
-| Database   | H2, MySQL                    |
-| ORM        | Hibernate (JPA)              |
-| API Docs   | Swagger (OpenAPI)            |
-| Build Tool | Maven                        |
+The UC12 implementation repeated the same logic across multiple methods:
 
----
+- Null checks and unit validation  
+- Cross-category compatibility checks  
+- Finiteness checks for numeric values  
+- Base-unit conversions  
+- Target unit handling  
 
-## 🔑 Authentication Flow
-
-### 🔐 1. JWT Login
-
-```
-POST /auth/login
-```
-
-➡️ Returns JWT Token
+This duplication violated DRY, increased maintenance cost, and made the code harder to read and
+extend. UC13 centralizes this logic into private helpers, creating a **single source of truth** for
+validation and arithmetic.
 
 ---
 
-### 🌐 2. GitHub OAuth Login
+## Refactoring Design
 
-```
-GET /oauth2/authorization/github
-```
+### Centralized Validation
 
-➡️ Redirects to GitHub
-➡️ Returns JWT after successful login
+A single private method validates all operands and (when applicable) target units.  
+All arithmetic operations call this method, ensuring consistent error handling and messages.
 
----
+### Core Arithmetic Helper
 
-### 🔒 3. Access Protected APIs
+A single private method:
+1. Converts both operands to base units  
+2. Applies the requested arithmetic operation  
+3. Returns the base-unit result  
 
-Add header:
+Public methods then convert the result to the requested target unit (for add/subtract) or return
+a dimensionless scalar (for divide).
 
-```
-Authorization: Bearer <JWT_TOKEN>
-```
+### Enum-Based Operation Dispatch
 
----
-
-## 📌 API Endpoints
-
-### 🔹 Quantity Operations
-
-| Method | Endpoint                      | Description         |
-| ------ | ----------------------------- | ------------------- |
-| POST   | `/api/v1/quantities/compare`  | Compare quantities  |
-| POST   | `/api/v1/quantities/convert`  | Convert units       |
-| POST   | `/api/v1/quantities/add`      | Add quantities      |
-| POST   | `/api/v1/quantities/subtract` | Subtract quantities |
-| POST   | `/api/v1/quantities/divide`   | Divide quantities   |
-
----
-
-### 🔹 History & Reports
-
-| Method | Endpoint                                           |
-| ------ | -------------------------------------------------- |
-| GET    | `/api/v1/quantities/history/operation/{operation}` |
-| GET    | `/api/v1/quantities/history/type/{type}`           |
-| GET    | `/api/v1/quantities/count/{operation}`             |
-| GET    | `/api/v1/quantities/history/errored`               |
-
----
-
-### 🔹 Auth APIs
-
-| Method | Endpoint         |
-| ------ | ---------------- |
-| POST   | `/auth/register` |
-| POST   | `/auth/login`    |
-
----
-
-## ⚙️ Configuration
-
-### 🔐 JWT Properties
-
-```properties
-jwt.secret=your_secret_key
-jwt.expiration=86400000
-```
-
----
-
-### 🌐 GitHub OAuth Config
-
-```properties
-spring.security.oauth2.client.registration.github.client-id=YOUR_CLIENT_ID
-spring.security.oauth2.client.registration.github.client-secret=YOUR_CLIENT_SECRET
-spring.security.oauth2.client.registration.github.scope=user:email
-```
-
----
-
-## 📊 Swagger UI
-
-Access API docs:
-
-```
-http://localhost:8080/swagger-ui/index.html
-```
-
----
-
-## 🧪 Testing
-
-* Unit & Integration tests included
-* Security disabled for test profile
-* Covers:
-
-  * API endpoints
-  * Database persistence
-  * Validation scenarios
-
----
-
-## ⚠️ Important Notes
-
-* OAuth login must be tested via browser (not Postman)
-* JWT required for all protected endpoints
-* Unauthorized requests return `401` (not redirect)
+An internal `ArithmeticOperation` enum encapsulates operation-specific logic (`ADD`, `SUBTRACT`,
+`DIVIDE`). This avoids scattered conditionals and makes it trivial to add future operations like
+`MULTIPLY` without changing validation or conversion code.
 
 ---
 
 
+**Code Link:** [UC-13 feature](https://github.com/Ayush5304/QuantityMeasurementApp/tree/feature/UC13-CentralizedArithmeticLogic)
