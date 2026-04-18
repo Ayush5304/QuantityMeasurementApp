@@ -1,0 +1,3 @@
+13.49.183.208.sslip.io {
+    reverse_proxy api-gateway:8080
+}
